@@ -1,0 +1,23 @@
+<video ng-if="opts.type != 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></video>
+<audio ng-if="opts.type == 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></audio>
+
+<br />
+<button ng-click="upload();" ng-show="btnVisible" class="btn btn-default">{{opts.text.uploadBtn}}</button>
+<div ng-show="showUploadStatus" class="upload-status">
+	<span style="float:left; font-style: italic; font-size:70%;">partial time left: {{timeLeft}} - speed: {{speed}}</span><br />
+	<div class="progress">
+		<div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar"
+		aria-valuenow="{{completed}}" aria-valuemin="0" aria-valuemax="100" style="width:{{completed}}%">
+			{{completed}}%
+		</div>
+	</div>
+	<span style="float:left; font-style: italic; font-size:70%;">total time left: {{totalTimeLeft}}</span><br />
+	<div class="progress">
+		<div class="progress-bar progress-bar-success active" role="progressbar"
+		aria-valuenow="{{totalCompleted}}" aria-valuemin="0" aria-valuemax="100" style="width:{{totalCompleted}}%">
+			{{totalCompleted}}%
+		</div>
+	</div>
+</div>
+<div ng-show="uploadError" class="label label-danger">{{opts.text.uploadError}}</div>
+<div ng-show="uploaded" class="label label-success">{{opts.text.uploaded}}</div>

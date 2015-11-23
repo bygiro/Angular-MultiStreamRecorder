@@ -1,0 +1,32 @@
+
+.table {
+	margin-top: 20px;
+    table-layout:fixed;
+}
+
+.table th {
+	width: 150px;
+}
+
+.table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+
+.preview-extension {
+	font-weight: bold;
+	font-style: italic;
+	color: green;
+	font-size: 30px;
+}
+
+.preview-image img{
+	max-width: 200px;
+	max-height: 200px;
+}
+
+pre {
+	max-height: 250px;
+}

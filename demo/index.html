@@ -1,0 +1,60 @@
+<html ng-app="demoApp">
+<head>
+	<meta charset="utf-8" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"></script>
+
+  <link href="http://vjs.zencdn.net/5.0/video-js.css" rel="stylesheet">
+  <link href="assets/css/videojs.record.css" rel="stylesheet">
+
+  <script src="http://vjs.zencdn.net/5.0/video.js"></script>
+  <script src="http://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+  
+  <!-- gif -->
+  <script src="http://cdn.webrtc-experiment.com/gif-recorder.js"></script>
+  
+  <!-- audio -->
+  <script src="http://katspaugh.github.io/wavesurfer.js/dist/wavesurfer.min.js"></script>
+  <script src="http://katspaugh.github.io/wavesurfer.js/dist/plugin/wavesurfer.microphone.min.js"></script>
+  <script src="http://collab-project.github.io/videojs-wavesurfer/dist/videojs.wavesurfer.min.js"></script>
+
+  <script src="assets/js/videojs.record.js"></script>	
+	
+  <script src="../dist/angular-multistreamrecorder.js"></script>
+  <script src="demo.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="demo.css" />
+  
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+</head>
+<body ng-controller="demoCtrl">
+<div class="container-fluid">
+
+	<div class="row">
+		<div class="col-md-12">
+			<h1>Angular directive: MultiStreamRecorder</h1>
+			<p>This is a directive for <a href="https://github.com/angular/angular.js" target="_blank">angular</a> (based on <a href="https://github.com/collab-project/videojs-record" target="_blank">videojs-record</a>).
+It's a directive to create a video element to record a video/audio, video, audio, animated gif, or a simple photo, using the browser (NO FLASH) with builtin camera and mic.
+It requires, angular, video.js, recordRTC.			
+			</p>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<div data-msr-options="options" ng-model="model" multi-stream-recorder></div>
+		</div>
+		<div class="col-md-8">
+			Type: {{model.type}} <br />
+			Size: {{model.size | bytes}}
+		</div>
+	</div>
+</div>
+</body>
+
+</html>
