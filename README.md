@@ -8,7 +8,7 @@ It requires, angular, video.js, recordRTC.
 ### Install with Bower
 
 ```bash
-$ bower install angular angular-multistreamrecorder --save
+$ bower install angular angular-multiStreamRecorder --save
 ```
 
 check the demo

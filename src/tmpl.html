@@ -1,5 +1,5 @@
-<video ng-if="opts.type != 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></video>
-<audio ng-if="opts.type == 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></audio>
+<video ng-if="opts.streamType != 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></video>
+<audio ng-if="opts.streamType == 'audio'" class="stream-recorder video-js vjs-default-skin {{opts.class}}" style="background-color: #9FD6BA;"></audio>
 
 <br />
 <button ng-click="upload();" ng-show="btnVisible" class="btn btn-default">{{opts.text.uploadBtn}}</button>

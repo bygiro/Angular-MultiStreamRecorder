@@ -1,8 +1,8 @@
-/*! angular-multistreamrecorder - v0.0.1 - 16 november 2015
+/*! angular-multistreamrecorder - v0.0.2 - 16 november 2015
 * Copyright (c) G. Tomaselli <girotomaselli@gmail.com> 2015; Licensed  
 * based on https://github.com/collab-project/videojs-record  */
 angular.module('ByGiro.multiStreamRecorder', [])
-.directive('multiStreamRecorder', ['$window','$parse','$q', function ($window, $parse, $q) {
+.directive('multiStreamRecorder', ['$window','$parse', function ($window, $parse) {
   return {
     restrict: 'AE',
 	scope: {
@@ -12,6 +12,9 @@ angular.module('ByGiro.multiStreamRecorder', [])
     link: function (scope, elem, attrs){
 
 		var bg = (typeof jQuery != 'undefined') ? jQuery : angular.element,
+		result = '',		
+		browserSupported = true,
+		browserNotSupportList = {},
 		customOpts = {},
 		opts = {
 			text: {
@@ -21,9 +24,10 @@ angular.module('ByGiro.multiStreamRecorder', [])
 				minutes: "Mins",
 				seconds: "Sec",
 				uploadError: "Error on upload, please try again",
-				uploaded: "Uploaded"
+				uploaded: "Uploaded",
+				notSupported: "Browser not supported"
 			},
-			type: 'stream', // audio, video, stream, gif, image
+			streamType: 'stream', // audio, video, stream, gif, image
 			"class": "",
 			video: {
 				controls: true,
@@ -37,6 +41,8 @@ angular.module('ByGiro.multiStreamRecorder', [])
 					}
 				}
 			},
+			setModel: true,
+			base64Result: false, // if true the blob result will be a base64 encoded string
 			splitAt: 1000, // kb
 			uploadUrl: "",
 			uploadBtn: false,
@@ -59,8 +65,8 @@ angular.module('ByGiro.multiStreamRecorder', [])
 			customOpts = scope.$parent[attrs.msrOptions];
 		}
 
-		customOpts.type = (customOpts.type || opts.type).toLowerCase();
-		switch(customOpts.type){				
+		customOpts.streamType = (customOpts.streamType || opts.streamType).toLowerCase();
+		switch(customOpts.streamType){				
 			case 'video':
 				opts.video.plugins.record.audio = false;
 				break;
@@ -118,10 +124,60 @@ angular.module('ByGiro.multiStreamRecorder', [])
 		
 		scope.opts.video.plugins.record.maxLength = scope.opts.maxLength;
 		
-		function b64toBlob(b64Data, contentType, sliceSize) {
-			contentType = contentType || '';
+		function get_browser_info(){
+			var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+			if(/trident/i.test(M[1])){
+				tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+				return {name:'IE',version:(tem[1]||'')};
+				}   
+			if(M[1]==='Chrome'){
+				tem=ua.match(/\bOPR\/(\d+)/)
+				if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+				}   
+			M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+			if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+			return {
+			  name: M[0],
+			  version: M[1]
+			};
+		}
+		
+		// todo
+		browserNotSupportList = {
+			"stream": {
+				"Chrome": true
+			},
+			"video": {
+				
+			},
+			"audio": {
+				
+			},
+			"gif": {
+				
+			},
+			"image": {
+				
+			}
+		};
+		
+		function blobToB64(blob, cb){
+			var reader = new FileReader();
+			reader.onload = function(){				
+				if(typeof cb == 'function'){
+					cb(reader.result);
+				}
+			};
+			reader.readAsDataURL(blob);
+		};
+		
+		function b64toBlob(b64Data, sliceSize) {
 			sliceSize = sliceSize || 512;
 
+			b64Data = b64Data.replace(/data:/i,"").split(";base64,");
+			var contentType = b64Data[0];
+			b64Data = b64Data[1];
+			
 			var byteCharacters = atob(b64Data);
 			var byteArrays = [];
 
@@ -175,13 +231,12 @@ angular.module('ByGiro.multiStreamRecorder', [])
 				return str.join(", ");
 			}			
 			
-			if(!scope.opts.uploadUrl || scope.opts.uploadUrl == '' || !scope.dataVal || scope.dataVal == '') return;
-			var blob = scope.dataVal;
+			if(!scope.opts.uploadUrl || scope.opts.uploadUrl == '' || !result || result == '') return;
+			var blob = result;
 			
-			if(scope.opts.type == 'image'){
-				// convert base64 image to blob
-				blob = blob.split('base64,');
-				blob = b64toBlob(blob[1]);
+			if(scope.opts.base64Result){
+				// convert base64 to blob
+				blob = b64toBlob(blob);
 			}
 
 			var splitAt = scope.opts.splitAt || blob.size;
@@ -191,7 +246,6 @@ angular.module('ByGiro.multiStreamRecorder', [])
 			fileReader.onload = function(e){
 				function _upload(blobPart) {
 					return new Promise(function(resolve, reject){
-						console.log(blobPart.index, blobPart.data.size);
 						var doneLength = Object.keys(done).length,
 						formData = new FormData();
 						formData.append('index', blobPart.index);
@@ -313,8 +367,22 @@ angular.module('ByGiro.multiStreamRecorder', [])
 			fileReader.readAsArrayBuffer(blob);
 		}
 		
-		setTimeout(function(){		
-			videoElem = elem[0].querySelectorAll('.stream-recorder')[0];
+		// TODO: check browser support
+		var uBrowser,user = get_browser_info(),
+		uncompatibility = browserNotSupportList[scope.opts.type];
+		if(uncompatibility && uncompatibility[user.name]){
+			uBrowser = uncompatibility[user.name];
+			if(uBrowser === true || parseInt(user.version) < uBrowser){
+				browserSupported = false;
+			}
+		}
+		
+		setTimeout(function(){
+			if(!browserSupported){
+				elem.html('<p style="font-size: 120%; color: red; text-align: center; font-style: italic;">'+ scope.opts.text.notSupported +'</p>');
+				return;
+			}			
+			videoElem = elem[0].querySelectorAll('.stream-recorder')[0];		
 			player = videojs(videoElem,scope.opts.video);
 			
 			// error handling
@@ -353,24 +421,44 @@ angular.module('ByGiro.multiStreamRecorder', [])
 					scope.opts.onFinishRecord.apply(this);					
 				}
 
-				// the blob object contains the recorded data that
-				// can be downloaded by the user, stored on server etc.
-				scope.dataVal = this.recordedData;
-				
-				if(this.recordedData){				
-					if(scope.opts.uploadBtn){
-						// show upload button
-						scope.btnVisible = true;
-					} else {
-						scope.upload();
+				var callback = function(value){
+					result = value;
+					if(scope.opts.setModel){
+						scope.dataVal = value;
 					}
+					
+					if(value){
+						if(scope.opts.uploadBtn){
+							// show upload button
+							scope.btnVisible = true;
+						} else {
+							scope.upload();
+						}
+					}
+					
+					if(scope.opts.recordOnce){
+						player.recordToggle.hide();
+					}
+
+					apply();
 				}
 				
-				if(scope.opts.recordOnce){
-					this.recordToggle.hide();
+				var recordedData = this.recordedData;
+				if(scope.opts.base64Result){
+					// result as base64					
+					if(scope.opts.streamType == 'image'){
+						callback(recordedData);
+					} else {
+						blobToB64(recordedData, callback);
+					}
+				} else {
+					// result as blob
+					if(scope.opts.streamType == 'image'){
+						recordedData = b64toBlob(recordedData);
+					}
+					
+					callback(recordedData);
 				}
-
-				apply();
 			});		
 		
 		}, 50);		
