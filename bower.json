@@ -6,7 +6,7 @@
   ],
   "contributors": [],
   "main": [
-	"dist/angular-multistreamrecorder.js"
+    "dist/angular-multistreamrecorder.js"
   ],
   "description": "It's a directive to create a video element to record a video/audio, video, audio, animated gif, or a simple photo, using the browser (NO FLASH) with builtin camera and mic.It requires, angular, video.js, recordRTC.",
   "keywords": [
@@ -30,7 +30,12 @@
     "tests"
   ],
   "dependencies": {
-    "angular": ">=1.2.x"
+    "angular": ">=1.2.x",
+    "webrtc-adapter": "~0.2.5",
+    "videojs-record": "~1.0.3",
+    "video.js": "videojs#~5.4.5",
+    "recordrtc": "~5.2.3",
+    "jquery": "~2.1.4"
   },
   "devDependencies": {
     "chai": "~1.9.1",
