@@ -1,4 +1,4 @@
-/*! angular-multistreamrecorder - v0.0.2 - 16 november 2015
+/*! angular-multistreamrecorder - v0.0.3 - 16 november 2015
 * Copyright (c) G. Tomaselli <girotomaselli@gmail.com> 2015; Licensed  
 * based on https://github.com/collab-project/videojs-record  */
 angular.module('ByGiro.multiStreamRecorder', [])

@@ -9,7 +9,7 @@
 					uploadBtn: "Upload"
 				},
 				"class": "myClass",
-				type: "stream",
+				streamType: "image",
 				uploadUrl: "",	// url to upload
 				uploadBtn: false,
 				recordOnce: true,
